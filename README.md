@@ -31,7 +31,7 @@ As shown in the cluster architecture, I will create a Host-Only network interfac
 
 ```VBoxManage hostonlyif create```
 
-After that command, you will now the network name (eg: `vboxnetx`). Use it for next command to configure the network IP:
+After that command, VBoxManage will present us the network name (eg: `vboxnetx`). Use it for next command to configure the network IP:
 
 `VBoxManage hostonlyif ipconfig vboxnet3 --ip 173.0.1.1`
 
