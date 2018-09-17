@@ -6,19 +6,21 @@ Storage topics are also not discussed in this tutorial, so all data will be stor
 System requirements to install IBM Cloud Private (ICP) varies based on your architecture. ICP supports Linux 64 bit on x86 architecture (Red Hat Enterprise Linux and Ubuntu 16.04 LTS) or Linux on IBM Power. In this tutorial, I use `Ubuntu 16.04 LTS`. 
 ## Determine your cluster architecture
 First you need to decide the architecture of your cluster. A `standard` configuration for a multi-node ICP cluster is 
-```
-A single master
-A single proxy node
-Three worker nodes 
-```
+
+* A single master
+* A single proxy node
+* Three worker nodes 
+
 but I will compact the architecture even more, to make it 3 virtual machines (VMs) only
 
-```
-One VM contains both proxy and master node
-Two VMs each hosts a worker node
-```
+
+* One VM contains both proxy and master node
+* Two VMs each hosts a worker node
+
 Here is now it looks:
+
 <image src="images/arch.png" />
+
 ## Setup infrastructure 
 
 ### Configure VirtualBox network
@@ -133,6 +135,7 @@ $ sytemctl restart ntp
 ```
 $ sudo vi /etc/sysctl.conf 
 ```
+
 Add this line in then reboot the VM
 
 ```
@@ -169,6 +172,7 @@ $ vboxmanage registervm ~/VirtualBox\ VMs/worker1/worker1.vbox
 $ vboxmanage clonevm boot-master-proxy --name worker2
 $ vboxmanage registervm ~/VirtualBox\ VMs/worker2/worker2.vbox
 ```
+
 ### Update network configuration on each worker node
 
 Now we can start all VMs using VirtualBox GUI or command line (better user GUI). VirtualBox will give us a command line interface for interacting with the VMs. Provide credentials to login to the VM and do further configuration. For example, with worker1
@@ -198,7 +202,7 @@ Assign a static IP address to the VM by changing the configuration in `/etc/netw
 $ sudo vi /etc/network/interfaces
 ```
 
-Make it looks like this
+Make it look like this
 
 ```
 # This file describes the network interfaces available on your system
@@ -265,6 +269,7 @@ Now we can ssh from `boot-master-proxy` node to the worker nodes without having 
 ```
 $ ssh root@worker1
 ```
+
 ### Install IBM Cloud Private CE from `boot-master-proxy` node
 
 Create installation directory and launch a docker container to pull the installation materials
@@ -311,5 +316,28 @@ Run the installation
 $ docker run --net=host -t -e LICENSE=accept -v "$(pwd)":/installer/cluster ibmcom/icp-inception:2.1.0.3 install
 ```
 
-Wait for about 30 minutes, we will have the IBM Cloud Private CE version deployed on the VMs. We can then access the cluster web console from the host machine via this link `https://172.0.1.100:8443`
+Wait for about 30 minutes, until you're presented a `happy` message like this, then the IBM Cloud Private CE version is successfully deployed on the VMs 
+
+```
+PLAY RECAP *************************************************************************************************************************************************************************************************
+172.0.1.100                : ok=159  changed=76   unreachable=0    failed=0   
+172.0.1.101                : ok=101  changed=40   unreachable=0    failed=0   
+172.0.1.102                : ok=97   changed=37   unreachable=0    failed=0   
+localhost                  : ok=69   changed=47   unreachable=0    failed=0   
+
+
+POST DEPLOY MESSAGE ****************************************************************************************************************************************************************************************
+
+The Dashboard URL: https://172.0.1.100:8443, default username/password is admin/admin
+
+Playbook run took 0 days, 0 hours, 23 minutes, 56 seconds
+```
+
+We can now access the ICP cluster's web console from the host machine via this link `https://172.0.1.100:8443` using the default credentials. 
+
+<image src="images/icp-login.png"/>
+
+Once logged in, navigate to `Catalog` link to see the charts, services that help us to start building our apps.
+
+<image src="images/icp-catalog.png"/>
 
